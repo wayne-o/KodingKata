@@ -16,7 +16,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -78,10 +78,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusInstaller.cs" />
+    <Compile Include="Commit.cs" />
     <Compile Include="IBus.cs" />
     <Compile Include="ICommand.cs" />
+    <Compile Include="IDispatchCommits.cs" />
     <Compile Include="IDomainEvent.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="MassTransitPublisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

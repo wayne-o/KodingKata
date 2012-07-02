@@ -20,6 +20,9 @@ namespace CommandService
     using Infrastructure;
 
     using MassTransit;
+
+    using NLog;
+
     using Topshelf;
 
     /// <summary>
@@ -27,7 +30,10 @@ namespace CommandService
     /// </summary>
     public class Program
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private IWindsorContainer _container;
+
         private IBus _bus;
 
         private static void Main()
@@ -41,6 +47,7 @@ namespace CommandService
                     s.WhenStarted(p => p.Start());
                     s.WhenStopped(p => p.Stop());
                 });
+
                 x.RunAsLocalSystem();
 
                 x.SetDescription("Handles the domain logic for the Application.");
@@ -58,7 +65,18 @@ namespace CommandService
 
         private void Start()
         {
-            SetupContainer();
+            try
+            {
+                SetupContainer();
+            }
+            catch (Exception exc)
+            {
+                if (_logger.IsErrorEnabled)
+                {
+                    _logger.Error(exc);
+                }
+                throw;
+            }
         }
 
         private IEndpoint GetDomainService()
@@ -75,6 +93,9 @@ namespace CommandService
             _container.Register(Component.For<IWindsorContainer>().Instance(_container));
 
             _container.Install(new BusInstaller(Keys.CommandServiceEndpoint));
+            _container.Install(new CommandHandlerInstaller());
+
+            _bus = _container.Resolve<IBus>();
         }
     }
 }

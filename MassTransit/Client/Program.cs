@@ -19,7 +19,11 @@ namespace Client
 
     using Infrastructure;
 
+    using Magnum;
+
     using MassTransit;
+
+    using Messages;
 
     using Topshelf;
 
@@ -51,6 +55,18 @@ namespace Client
         private void Start()
         {
             SetupContainer();
+
+            CallServiceBus();
+        }
+
+        private void CallServiceBus()
+        {
+            _bus.Send(new SimpleCommand
+                {
+                     AggregateId = CombGuid.Generate(),
+                     Message = "test",
+                     Version = 0
+                });
         }
 
         private IEndpoint GetDomainService()
@@ -67,6 +83,8 @@ namespace Client
             _container.Register(Component.For<IWindsorContainer>().Instance(_container));
 
             _container.Install(new BusInstaller(Keys.ClientEndpoint));
+
+            _bus = _container.Resolve<IBus>();
         }
     }
 }

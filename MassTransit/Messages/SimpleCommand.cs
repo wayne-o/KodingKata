@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Class1.cs" company="Project Attack Ltd">
+// <copyright file="SimpleCommand.cs" company="Project Attack Ltd">
 //   2012 Project Attack Ltd
 // </copyright>
 // <summary>
@@ -9,10 +9,16 @@
 
 namespace Messages
 {
-    /// <summary>
-    /// The class 1.
-    /// </summary>
-    public class Class1
+    using System;
+
+    using Infrastructure;
+
+    public class SimpleCommand : ICommand
     {
+        public Guid AggregateId { get; set; }
+
+        public uint Version { get; set; }
+
+        public string Message { get; set; }
     }
 }

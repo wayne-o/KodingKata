@@ -53,12 +53,12 @@ namespace Infrastructure
                                                 sbc.Subscribe(c => c.LoadFrom(container));
                                             })).LifeStyle.Singleton);
 
-            ////container.Register(
-            ////    Component
-            ////    .For<IBus>()
-            ////    .UsingFactoryMethod((k, c) =>
-            ////        new MassTransitPublisher(k.Resolve<IServiceBus>()))
-            ////        .Forward<IDispatchCommits>().LifeStyle.Singleton);
+            container.Register(
+                Component
+                .For<IBus>()
+                .UsingFactoryMethod((k, c) =>
+                    new MassTransitPublisher(k.Resolve<IServiceBus>()))
+                    .Forward<IDispatchCommits>().LifeStyle.Singleton);
         }
     }
 }
