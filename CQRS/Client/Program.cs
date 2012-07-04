@@ -57,6 +57,21 @@ namespace Client
             SetupContainer();
 
             CallServiceBus();
+
+            _bus.Send(new CreateNewUser
+                {
+                    ActivationKey = CombGuid.Generate(),
+                    AggregateId = CombGuid.Generate(),
+                    Email = "test",
+                    FirstName = "asdad",
+                    LastName = "asdad",
+                    Password = "asdad",
+                    SendActivationEmail = false,
+                    UserName = "asdad",
+                    Version = 0
+                });
+
+            Console.ReadLine();
         }
 
         private void CallServiceBus()

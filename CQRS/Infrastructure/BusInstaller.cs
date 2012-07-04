@@ -16,6 +16,8 @@ namespace Infrastructure
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
+    using EventStore.Dispatcher;
+
     using MassTransit;
     using MassTransit.NLogIntegration;
 

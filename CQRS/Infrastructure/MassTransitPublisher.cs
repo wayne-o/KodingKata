@@ -2,6 +2,8 @@ namespace Infrastructure
 {
     using System;
 
+    using EventStore.Dispatcher;
+
     using Magnum.Reflection;
 
     using MassTransit;
@@ -9,8 +11,7 @@ namespace Infrastructure
     /// <summary>
     /// The mass transit publisher.
     /// </summary>
-    public class MassTransitPublisher : IBus, 
-                                        IDispatchCommits
+    public class MassTransitPublisher : IBus, IDispatchCommits
     {
         /// <summary>
         /// The _ bus.
@@ -55,22 +56,16 @@ namespace Infrastructure
         }
 
         /// <summary>
-        /// The dispatch.
-        /// </summary>
-        /// <param name="commit">
-        /// The commit.
-        /// </param>
-        void IDispatchCommits.Dispatch(Commit commit)
-        {
-           
-        }
-
-        /// <summary>
         /// The dispose.
         /// </summary>
         public void Dispose()
         {
             this._Bus.Dispose();
+        }
+
+        public void Dispatch(EventStore.Commit commit)
+        {
+            
         }
 
         /// <summary>

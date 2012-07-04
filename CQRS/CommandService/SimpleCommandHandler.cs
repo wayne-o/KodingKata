@@ -11,22 +11,49 @@ namespace CommandService
     using System.Linq;
     using System.Text;
 
+    using Domain;
+
+    using Magnum;
+
     using MassTransit;
+    using MassTransit.Util;
 
     using Messages;
 
     using NLog;
 
-    /// <summary>
-    /// TODO: Update summary.
-    /// </summary>
-    public class SimpleCommandHandler : Consumes<SimpleCommand>.Context
+    using Sonatribe.Domain;
+
+    public class SimpleCommandHandler : Consumes<CreateNewUser>.Context
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public void Consume(IConsumeContext<SimpleCommand> message)
+        private readonly Func<IDomainRepository> _repository;
+
+        public SimpleCommandHandler([NotNull] Func<IDomainRepository> repository)
         {
-            _logger.Info(message.Message.Message);
+            _repository = repository;
+        }
+
+        public void Consume(IConsumeContext<CreateNewUser> command)
+        {
+            _logger.Info(command.Message.UserName);
+
+            var c = command.Message;
+
+            try
+            {
+                var repo = _repository();
+
+                var user = User.CreateNew(c.AggregateId, new UserName(c.UserName), new EmailAddress(c.Email), c.Password, c.ActivationKey, c.SendActivationEmail);
+
+                repo.Save(user, CombGuid.Generate(), null);
+            }
+            catch (Exception exc)
+            {
+                _logger.Error(exc.Message);
+                _logger.Error(exc.StackTrace);
+            }
         }
     }
 }

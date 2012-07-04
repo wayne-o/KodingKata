@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,7 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Address.cs" />
     <Compile Include="AggregateFactory.cs" />
+    <Compile Include="AggregateRootEx.cs" />
+    <Compile Include="EmailAddress.cs" />
     <Compile Include="EventAccessorEx.cs" />
     <Compile Include="EventRouter.cs" />
     <Compile Include="EventStoreRepository.cs" />
@@ -66,13 +70,20 @@
     <Compile Include="IAggregateRootFactory.cs" />
     <Compile Include="IDomainRepository.cs" />
     <Compile Include="IEventAccessor.cs" />
+    <Compile Include="PhoneNumber.cs" />
     <Compile Include="PrivateReflectionDynamicObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User\User.cs" />
+    <Compile Include="User\UserName.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
       <Project>{E77D0C17-7151-448D-A478-E4C0D4ACC1EF}</Project>
       <Name>Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messages\Messages.csproj">
+      <Project>{41C411AC-9F2B-4227-A25A-06979B0C392E}</Project>
+      <Name>Messages</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

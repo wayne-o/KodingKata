@@ -95,6 +95,7 @@ namespace CommandService
             _container.Install(new BusInstaller(Keys.CommandServiceEndpoint));
             _container.Install(new CommandHandlerInstaller());
             _container.Install(new EventStoreInstaller());
+            _container.Install(new DomainInfrastructureInstaller());
 
             _bus = _container.Resolve<IBus>();
         }
