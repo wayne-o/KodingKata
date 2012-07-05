@@ -24,15 +24,42 @@ namespace Infrastructure
     /// </summary>
     public class BusInstaller : IWindsorInstaller
     {
+        #region Constants and Fields
+
+        /// <summary>
+        /// The _endpoint uri.
+        /// </summary>
         private readonly string _endpointUri;
 
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BusInstaller"/> class.
+        /// </summary>
+        /// <param name="endpointUri">
+        /// The endpoint uri.
+        /// </param>
         public BusInstaller(string endpointUri)
         {
             this._endpointUri = endpointUri;
         }
 
-        public void Install(IWindsorContainer container, 
-                            IConfigurationStore store)
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The install.
+        /// </summary>
+        /// <param name="container">
+        /// The container.
+        /// </param>
+        /// <param name="store">
+        /// The store.
+        /// </param>
+        public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             // for factory
             if (container.Kernel.GetFacilities().All(x => x.GetType() != typeof(TypedFactoryFacility)))
@@ -41,24 +68,22 @@ namespace Infrastructure
             }
 
             container.Register(
-                Component
-                .For<IServiceBus>()
-                .UsingFactoryMethod(() =>
-                    ServiceBusFactory.New(sbc =>
-                                            {
-                                                sbc.ReceiveFrom(this._endpointUri);
-                                                sbc.UseRabbitMqRouting();
-                                                sbc.UseNLog();
-                                                sbc.SetPurgeOnStartup(true);
-                                                sbc.Subscribe(c => c.LoadFrom(container));
-                                            })).LifeStyle.Singleton);
+                Component.For<IServiceBus>().UsingFactoryMethod(
+                    () => ServiceBusFactory.New(
+                        sbc =>
+                            {
+                                sbc.ReceiveFrom(this._endpointUri);
+                                sbc.UseRabbitMqRouting();
+                                sbc.UseNLog();
+                                sbc.SetPurgeOnStartup(true);
+                                sbc.Subscribe(c => c.LoadFrom(container));
+                            })).LifeStyle.Singleton);
 
             container.Register(
-                Component
-                .For<IBus>()
-                .UsingFactoryMethod((k, c) =>
-                    new MassTransitPublisher(k.Resolve<IServiceBus>()))
-                    .Forward<IDispatchCommits>().LifeStyle.Singleton);
+                Component.For<IBus>().UsingFactoryMethod((k, c) => new MassTransitPublisher(k.Resolve<IServiceBus>())).
+                    Forward<IDispatchCommits>().LifeStyle.Singleton);
         }
+
+        #endregion
     }
 }

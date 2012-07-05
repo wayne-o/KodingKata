@@ -28,8 +28,21 @@ namespace EventService
     /// </summary>
     public class Program
     {
-        private IWindsorContainer _container;
+        #region Constants and Fields
+
+        /// <summary>
+        /// The _bus.
+        /// </summary>
         private IBus _bus;
+
+        /// <summary>
+        /// The _container.
+        /// </summary>
+        private IWindsorContainer _container;
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The main.
@@ -37,50 +50,68 @@ namespace EventService
         private static void Main()
         {
             Thread.CurrentThread.Name = "Domain Service Main Thread";
-            HostFactory.Run(x =>
-            {
-                x.Service<Program>(s =>
-                {
-                    s.ConstructUsing(name => new Program());
-                    s.WhenStarted(p => p.Start());
-                    s.WhenStopped(p => p.Stop());
-                });
-                x.RunAsLocalSystem();
+            HostFactory.Run(
+                x =>
+                    {
+                        x.Service<Program>(
+                            s =>
+                                {
+                                    s.ConstructUsing(name => new Program());
+                                    s.WhenStarted(p => p.Start());
+                                    s.WhenStopped(p => p.Stop());
+                                });
+                        x.RunAsLocalSystem();
 
-                x.SetDescription("Handles the domain logic for the Application.");
-                x.SetDisplayName("Domain Service");
-                x.SetServiceName("Domain.Service");
-            });
+                        x.SetDescription("Handles the domain logic for the Application.");
+                        x.SetDisplayName("Domain Service");
+                        x.SetServiceName("Domain.Service");
+                    });
         }
 
-        private void Stop()
-        {
-            _container.Release(_bus);
-            _container.Dispose();
-            Process.GetCurrentProcess().Kill();
-        }
-
-        private void Start()
-        {
-            SetupContainer();
-        }
-
+        /// <summary>
+        /// The get domain service.
+        /// </summary>
+        /// <returns>
+        /// </returns>
         private IEndpoint GetDomainService()
         {
-            var bus = _container.Resolve<IServiceBus>();
-            var domainService = bus.GetEndpoint(new Uri(Keys.DomainServiceEndpoint));
+            var bus = this._container.Resolve<IServiceBus>();
+            IEndpoint domainService = bus.GetEndpoint(new Uri(Keys.DomainServiceEndpoint));
             return domainService;
         }
 
+        /// <summary>
+        /// The setup container.
+        /// </summary>
         private void SetupContainer()
         {
-            _container = new WindsorContainer(new XmlInterpreter("Windsor.config"));
+            this._container = new WindsorContainer(new XmlInterpreter("Windsor.config"));
 
-            _container.Register(Component.For<IWindsorContainer>().Instance(_container));
+            this._container.Register(Component.For<IWindsorContainer>().Instance(this._container));
 
-            _container.Install(new BusInstaller(Keys.CommandServiceEndpoint));
+            this._container.Install(new BusInstaller(Keys.CommandServiceEndpoint));
 
-            _bus = _container.Resolve<IBus>();
+            this._bus = this._container.Resolve<IBus>();
         }
+
+        /// <summary>
+        /// The start.
+        /// </summary>
+        private void Start()
+        {
+            this.SetupContainer();
+        }
+
+        /// <summary>
+        /// The stop.
+        /// </summary>
+        private void Stop()
+        {
+            this._container.Release(this._bus);
+            this._container.Dispose();
+            Process.GetCurrentProcess().Kill();
+        }
+
+        #endregion
     }
 }

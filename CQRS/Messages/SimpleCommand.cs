@@ -13,12 +13,28 @@ namespace Messages
 
     using Infrastructure;
 
+    /// <summary>
+    /// The simple command.
+    /// </summary>
     public class SimpleCommand : ICommand
     {
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets AggregateId.
+        /// </summary>
         public Guid AggregateId { get; set; }
 
+        /// <summary>
+        /// Gets or sets Message.
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets Version.
+        /// </summary>
         public uint Version { get; set; }
 
-        public string Message { get; set; }
+        #endregion
     }
 }

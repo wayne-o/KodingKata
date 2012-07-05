@@ -1,21 +1,33 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MassTransitPublisher.cs" company="Project Attack Ltd">
+//   2012 Project Attack Ltd
+// </copyright>
+// <summary>
+//   The mass transit publisher.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Infrastructure
 {
     using System;
-
-    using Magnum.Reflection;
 
     using MassTransit;
 
     /// <summary>
     /// The mass transit publisher.
     /// </summary>
-    public class MassTransitPublisher : IBus, 
-                                        IDispatchCommits
+    public class MassTransitPublisher : IBus, IDispatchCommits
     {
+        #region Constants and Fields
+
         /// <summary>
         /// The _ bus.
         /// </summary>
         private readonly IServiceBus _Bus;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MassTransitPublisher"/> class.
@@ -27,6 +39,22 @@ namespace Infrastructure
         {
             this._Bus = bus;
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this._Bus.Dispose();
+        }
+
+        #endregion
+
+        #region Explicit Interface Methods
 
         /// <summary>
         /// The register handler.
@@ -62,16 +90,11 @@ namespace Infrastructure
         /// </param>
         void IDispatchCommits.Dispatch(Commit commit)
         {
-           
         }
 
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this._Bus.Dispose();
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The publish event.
@@ -85,5 +108,7 @@ namespace Infrastructure
         {
             this._Bus.Publish(message);
         }
+
+        #endregion
     }
 }

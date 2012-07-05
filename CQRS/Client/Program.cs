@@ -11,11 +11,9 @@ namespace Client
 {
     using System;
     using System.Diagnostics;
-    using System.Threading;
 
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
-    using Castle.Windsor.Configuration.Interpreters;
 
     using Infrastructure;
 
@@ -25,15 +23,26 @@ namespace Client
 
     using Messages;
 
-    using Topshelf;
-
     /// <summary>
     /// The program.
     /// </summary>
     internal class Program
     {
-        private IWindsorContainer _container;
+        #region Constants and Fields
+
+        /// <summary>
+        /// The _bus.
+        /// </summary>
         private IBus _bus;
+
+        /// <summary>
+        /// The _container.
+        /// </summary>
+        private IWindsorContainer _container;
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The main.
@@ -45,46 +54,60 @@ namespace Client
             p.Stop();
         }
 
-        private void Stop()
-        {
-            _container.Release(_bus);
-            _container.Dispose();
-            Process.GetCurrentProcess().Kill();
-        }
-
-        private void Start()
-        {
-            SetupContainer();
-
-            CallServiceBus();
-        }
-
+        /// <summary>
+        /// The call service bus.
+        /// </summary>
         private void CallServiceBus()
         {
-            _bus.Send(new SimpleCommand
-                {
-                     AggregateId = CombGuid.Generate(),
-                     Message = "test",
-                     Version = 0
-                });
+            this._bus.Send(new SimpleCommand { AggregateId = CombGuid.Generate(), Message = "test", Version = 0 });
         }
 
+        /// <summary>
+        /// The get domain service.
+        /// </summary>
+        /// <returns>
+        /// </returns>
         private IEndpoint GetDomainService()
         {
-            var bus = _container.Resolve<IServiceBus>();
-            var domainService = bus.GetEndpoint(new Uri(Keys.DomainServiceEndpoint));
+            var bus = this._container.Resolve<IServiceBus>();
+            IEndpoint domainService = bus.GetEndpoint(new Uri(Keys.DomainServiceEndpoint));
             return domainService;
         }
 
+        /// <summary>
+        /// The setup container.
+        /// </summary>
         private void SetupContainer()
         {
-            _container = new WindsorContainer();
+            this._container = new WindsorContainer();
 
-            _container.Register(Component.For<IWindsorContainer>().Instance(_container));
+            this._container.Register(Component.For<IWindsorContainer>().Instance(this._container));
 
-            _container.Install(new BusInstaller(Keys.ClientEndpoint));
+            this._container.Install(new BusInstaller(Keys.ClientEndpoint));
 
-            _bus = _container.Resolve<IBus>();
+            this._bus = this._container.Resolve<IBus>();
         }
+
+        /// <summary>
+        /// The start.
+        /// </summary>
+        private void Start()
+        {
+            this.SetupContainer();
+
+            this.CallServiceBus();
+        }
+
+        /// <summary>
+        /// The stop.
+        /// </summary>
+        private void Stop()
+        {
+            this._container.Release(this._bus);
+            this._container.Dispose();
+            Process.GetCurrentProcess().Kill();
+        }
+
+        #endregion
     }
 }
